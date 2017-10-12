@@ -12,6 +12,10 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const socket = require('./socket')(io);
 
+// FOR TESTING
+const cc = require('./services/cryptocompare');
+new cc();
+
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));

@@ -2,26 +2,32 @@ const config = require('../config');
 const io = require('socket.io-client');
 const R = require('ramda');
 const CCC = require('../utils/cryptocompare');
-const { Observable } = require('rxjs');
+const { Observable, Subject } = require('rxjs');
+
+const API_URL = config.CRYPTOCOMPARE_URL;
+const STREAMER_URL = config.STREAMER_URL;
+const ANCHOR_COINS = config.ANCHOR_COINS;
 
 class CryptoCompare {
-    static API_URL = config.CRYPTOCOMPARE_URL;
-    static STREAMER_URL = config.STREAMER_URL;
-    static FIAT_COINS = config.FIAT_COINS;
 
-    // External properties
-    coins = [];
+
     get streams() { return this._streams; }
-
-    // Internal props (cryptocompare-specific)
-    _observers = {};
-    _streams = {};
 
     constructor(opts) {
         Object.assign(this, opts);
 
+        // External properties
+        this.coins = [];
+
+        // Internal props (cryptocompare-specific)
+        this._observers = {};
+        this._streams = {};
+
         this._checkSafety();
         this._initConnections();
+
+        // FOR TESTING:
+        this.addCoins(['BTC', 'ETH', 'ZEC']);
     }
 
     _checkSafety() {
@@ -49,16 +55,20 @@ class CryptoCompare {
     _getSubscription(coin) {
         // Right now, this compares everything except BTC/ETH against BTC
         // And compares both BTC/ETH against USD
-        const anchorCurrency = CryptoCompare.FIAT_COINS.includes(coin) ? 'USD' : 'BTC';
+        const anchorCurrency = ANCHOR_COINS.includes(coin) ? 'USD' : 'BTC';
         const subscriptionID = `5~CCCAGG~${coin}~${anchorCurrency}`;
 
         return subscriptionID;
     }
 
     _setupObservable(coin) {
-        this._streams[coin] = Observable.create((observer) => {
+        const source = Observable.create((observer) => {
             this._observers[coin] = observer;
         });
+
+        const subject = new Subject();
+        source.subscribe(subject);
+        this.streams[coin] = new Observable((observer) => subject.subscribe(observer));
     }
 
     _closeObservable(coin) {
@@ -78,9 +88,12 @@ class CryptoCompare {
 
     _handleUpdate(message) {
         const messageData = CCC.CURRENT.unpack(message);
-        const { fromSymbol: coin } = messageData;
+        const { FROMSYMBOL: coin, TYPE } = messageData;
 
-        // TODO: Unpack message data here
+        if (TYPE !== '5') {
+            // This is not a price update
+            return;
+        }
 
         this._observers[coin].next(messageData);
     }
