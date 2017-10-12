@@ -46,4 +46,5 @@ app.use(function(err, req, res, next) {
 module.exports = app;
 
 // TODOS:
-// Parse socket responses from cryptocompare
+// Long polling API
+// Historical price API
