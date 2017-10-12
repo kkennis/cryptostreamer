@@ -1,7 +1,7 @@
 const config = require('../config');
 const io = require('socket.io-client');
 const R = require('ramda');
-const CCC + require('../utils/cryptocompare');
+const CCC = require('../utils/cryptocompare');
 const { Observable } = require('rxjs');
 
 class CryptoCompare {
@@ -21,16 +21,12 @@ class CryptoCompare {
         Object.assign(this, opts);
 
         this._checkSafety();
-        this.initConnections();
+        this._initConnections();
     }
 
     _checkSafety() {
         if (!Array.isArray(this.coins)) {
             throw new Error('Coins property is not an array');
-        }
-
-        if (!R.is(Object, this.conns)) {
-            throw new Error('Conns property is not an object');
         }
     }
 
@@ -83,6 +79,8 @@ class CryptoCompare {
     _handleUpdate(message) {
         const messageData = CCC.CURRENT.unpack(message);
         const { fromSymbol: coin } = messageData;
+
+        // TODO: Unpack message data here
 
         this._observers[coin].next(messageData);
     }
