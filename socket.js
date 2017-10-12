@@ -1,4 +1,4 @@
-const CryptoCompare = require('./servies/cryptocompare');
+const CryptoCompare = require('./services/cryptocompare');
 
 function setupSocket(io) {
     io.on('connection', setupSocket);

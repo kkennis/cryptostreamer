@@ -43,4 +43,3 @@ module.exports = app;
 
 // TODOS:
 // Parse socket responses from cryptocompare
-// Send responses back to client

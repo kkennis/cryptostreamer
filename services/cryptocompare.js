@@ -141,3 +141,5 @@ class CryptoCompare {
         return this;
     }
 }
+
+module.exports = CryptoCompare;
