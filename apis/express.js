@@ -67,7 +67,7 @@ function setupPoll(req, res, next) {
     function getAllTicks(coins, pollWindow, cb) {
         // Take one from each stream
         const streams = coins.map((coin) => cc.streams[coin]);
-        Observable.combineLatest(streams).subscribe(sendUpdate, errorHandler);
+        Observable.zip(streams).subscribe(sendUpdate, errorHandler);
     }
 
     function sendUpdate(tickData) {

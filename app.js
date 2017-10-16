@@ -46,7 +46,6 @@ module.exports = app;
 // TODOS:
 // Long polling HTTP API
 // ^ long-lived cc instance?
-// Vuex API
 // Historical price API
 // API Improvements - maybe time-based socket limiting (i.e. one per x mstebkdcj
 // ^ read up on observable implementations for ideas
