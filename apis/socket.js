@@ -1,10 +1,10 @@
-const CryptoCompare = require('./services/cryptocompare');
+const CryptoCompare = require('../services/cryptocompare');
 const R = require('ramda');
 
 const setupSocket = (io) => { io.on('connection', setupConnection); };
 
 function setupConnection(socket) {
-    const cc = new CryptoCompare();
+    const cc = new CryptoCompare({ hot: true });
     const subscriptions = {};
 
     socket.on('addCoin', (coin) => {
@@ -59,7 +59,7 @@ function setupConnection(socket) {
         subscriptions[coin] = cc.streams[coin].subscribe((newPrice) => {
             console.log('Got update for', coin);
             socket.emit(coin, newPrice);
-        });
+        }, errorHandler);
     }
 
     function doUnsubscribe(coin) {

@@ -9,15 +9,13 @@ const STREAMER_URL = config.STREAMER_URL;
 const ANCHOR_COINS = config.ANCHOR_COINS;
 
 class CryptoCompare {
-
-
     get streams() { return this._streams; }
 
     constructor(opts) {
         Object.assign(this, opts);
 
         // External properties
-        this.coins = [];
+        this.coins = this.coins || [];
 
         // Internal props (cryptocompare-specific)
         this._observers = {};
@@ -27,7 +25,9 @@ class CryptoCompare {
         this._initConnections();
 
         // FOR TESTING:
-        this.addCoins(['BTC', 'ETH', 'ZEC']);
+        if (this.coins.length === 0) {
+            this.addCoins(['BTC', 'ETH', 'ZEC']);
+        }
     }
 
     _checkSafety() {
@@ -66,9 +66,14 @@ class CryptoCompare {
             this._observers[coin] = observer;
         });
 
-        const subject = new Subject();
-        source.subscribe(subject);
-        this.streams[coin] = new Observable((observer) => subject.subscribe(observer));
+        if (this.hot) {
+            const subject = new Subject();
+            source.subscribe(subject);
+            this.streams[coin] = new Observable((observer) => subject.subscribe(observer));
+        } else {
+            this.streams[coin] = source;
+        }
+
     }
 
     _closeObservable(coin) {

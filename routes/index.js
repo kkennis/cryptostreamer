@@ -3,9 +3,7 @@ const router = express.Router();
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  res.json({
-      message: 'Welcome to cryptostreamer! Please connect to our socket.'
-  });
+
 });
 
 module.exports = router;
