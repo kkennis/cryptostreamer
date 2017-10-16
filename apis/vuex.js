@@ -96,6 +96,4 @@ function setupStore(Vue, store, opts) {
     }
 }
 
-
-
-module.exports = setupSocket;
+module.exports = setupStore;
